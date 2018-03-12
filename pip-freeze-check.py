@@ -1,23 +1,11 @@
 # Script that checks the license of the dependencies of a package
 # How to use me:
 # Create a virtualenv (or find a way to make this script create one)
-# python pip-freeeze-check.py invenio-packagename
+# python pip-freeze-check.py
 
-import sys
-import os
 from subprocess import call
 
 import pkg_resources
-
-
-def install(package_name, create_virtualenv=False):
-    if not (os.path.isdir("./" + package_name)):
-        print("Cloning git repository")
-        call(["git", "clone", "https://github.com/inveniosoftware/" + package_name])
-    # Make sure we run the script in a virtualenv
-    if not hasattr(sys, 'real_prefix'):
-        raise Exception("Not working in a virtualenv, exiting!")
-    call(["pip", "install", "-e", package_name + "[all]"])
 
 
 def _get_pkg_license(pkg):
@@ -46,6 +34,7 @@ def _get_pkg_license(pkg):
     else:
         return '(License not found)'
 
+
 def check():
     licenses = []
     for pkg in sorted(pkg_resources.working_set, key=lambda x: str(x).lower()):
@@ -59,8 +48,4 @@ def check():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        raise Exception("You need to provide packages name as an argument")
-    package_name = str(sys.argv[1])
-    install(package_name)
     check()
